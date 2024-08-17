@@ -3,13 +3,9 @@ const cardTemplate = document.querySelector("#card-template").content;
 
 // @todo: DOM узлы
 const placesList = document.querySelector(".places__list");
-const addButton = document.querySelector(".profile__add-button");
-
-let addedCards = [];
-let addedCardCount = 0;
 
 // @todo: Функция создания карточки
-function createCard(data, index) {
+function createCard(data) {
   const cardElement = cardTemplate.querySelector(".card").cloneNode(true);
   const cardImage = cardElement.querySelector(".card__image");
   const cardTitle = cardElement.querySelector(".card__title");
@@ -19,38 +15,18 @@ function createCard(data, index) {
   cardImage.alt = data.name;
   cardTitle.textContent = data.name;
 
-  deleteButton.addEventListener("click", () =>
-    handleCardDelete(cardElement, index)
-  );
+  deleteButton.addEventListener("click", () => handleCardDelete(cardElement));
 
   return cardElement;
 }
 
 // @todo: Функция удаления карточки
-function handleCardDelete(cardElement, index) {
+function handleCardDelete(cardElement) {
   cardElement.remove();
-  addedCards[index] = false;
-  addedCardCount--;
-
-  addButton.style.display = "block";
 }
 
 // @todo: Вывести карточки на страницу
-addButton.addEventListener("click", () => {
-  for (let i = 0; i < initialCards.length; i++) {
-    if (!addedCards[i]) {
-      const cardData = initialCards[i];
-      const newCardElement = createCard(cardData, i);
-      placesList.append(newCardElement);
-
-      addedCards[i] = true;
-      addedCardCount++;
-
-      if (addedCardCount === initialCards.length) {
-        addButton.style.display = "none";
-      }
-
-      break;
-    }
-  }
+initialCards.forEach((data) => {
+  const cardElement = createCard(data);
+  placesList.append(cardElement);
 });
