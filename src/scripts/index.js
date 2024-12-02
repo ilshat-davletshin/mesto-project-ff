@@ -5,12 +5,7 @@ import { initialCards } from "./cards.js";
 // Импорт функций для создания и управления карточками
 import { createCard, handleCardDelete, handleLikeClick } from "./card.js";
 // Импорт функций для работы с попапами
-import {
-  openPopup,
-  closePopup,
-  openImagePopup,
-  closePopupByOverlay,
-} from "./modal.js";
+import { openPopup, closePopup, closePopupByOverlay } from "./modal.js";
 
 // Получаем элементы из DOM
 // Список с локациями, куда будут добавляться карточки
@@ -40,12 +35,13 @@ const jobInput = formElement.querySelector(".popup__input_type_description");
 // Элементы профиля, которые отображают имя и описание
 const profileName = document.querySelector(".profile__title");
 const profileDescription = document.querySelector(".profile__description");
-
-// Функция открытия попапа с изображением при клике на карточку
-function handleImageClick(src, alt) {
-  // Открывает попап с изображением и подписью
-  openImagePopup(src, alt);
-}
+// Получаем элементы попапа с изображением
+// Находим попап, предназначенный для отображения изображения
+const popupImage = document.querySelector(".popup_type_image");
+// Находим элемент изображения внутри попапа
+const popupImageContent = popupImage.querySelector(".popup__image");
+// Находим подпись для изображения внутри попапа
+const popupCaption = popupImage.querySelector(".popup__caption");
 
 // Создание начальных карточек и добавление их на страницу
 initialCards.forEach((data) => {
@@ -63,6 +59,25 @@ initialCards.forEach((data) => {
   // Добавляем карточку в список на странице
   placesList.append(cardElement);
 });
+
+// Функция открытия попапа изображения
+// Устанавливает изображение и подпись, а затем открывает попап
+function openImagePopup(src, alt) {
+  // Устанавливаем ссылку на изображение
+  popupImageContent.src = src;
+  // Устанавливаем текстовое описание для изображения
+  popupImageContent.alt = alt;
+  // Устанавливаем текст подписи под изображением
+  popupCaption.textContent = alt;
+  // Открываем попап с изображением
+  openPopup(popupImage);
+}
+
+// Функция открытия попапа с изображением при клике на карточку
+function handleImageClick(src, alt) {
+  // Открывает попап с изображением и подписью
+  openImagePopup(src, alt);
+}
 
 // Функция инициализации всех попапов
 // Добавляет обработчики для закрытия попапов (по кнопке закрытия и при клике на оверлей)

@@ -1,11 +1,3 @@
-// Получаем элементы попапа с изображением
-// Находим попап, предназначенный для отображения изображения
-const popupImage = document.querySelector(".popup_type_image");
-// Находим элемент изображения внутри попапа
-const popupImageContent = popupImage.querySelector(".popup__image");
-// Находим подпись для изображения внутри попапа
-const popupCaption = popupImage.querySelector(".popup__caption");
-
 // Функция открытия попапа
 // Добавляет класс, чтобы сделать попап видимым, и добавляет обработчик для закрытия по клавише Escape.
 export function openPopup(popup) {
@@ -45,17 +37,4 @@ export function closePopupByOverlay(evt) {
   if (evt.target === evt.currentTarget) {
     closePopup(evt.currentTarget);
   }
-}
-
-// Функция открытия попапа изображения
-// Устанавливает изображение и подпись, а затем открывает попап
-export function openImagePopup(src, alt) {
-  // Устанавливаем ссылку на изображение
-  popupImageContent.src = src;
-  // Устанавливаем текстовое описание для изображения
-  popupImageContent.alt = alt;
-  // Устанавливаем текст подписи под изображением
-  popupCaption.textContent = alt;
-  // Открываем попап с изображением
-  openPopup(popupImage);
 }
