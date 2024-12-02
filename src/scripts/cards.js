@@ -1,5 +1,4 @@
-import { openImagePopup } from "./modal.js";
-
+// URL-адреса изображений для карточек
 const arhyzImage =
   "https://pictures.s3.yandex.net/frontend-developer/cards-compressed/arkhyz.jpg";
 const chelyabinskImage =
@@ -13,10 +12,11 @@ const kholmogorskiyImage =
 const baykalImage =
   "https://pictures.s3.yandex.net/frontend-developer/cards-compressed/baikal.jpg";
 
+// Массив начальных данных карточек
 export const initialCards = [
   {
-    name: "Архыз",
-    link: arhyzImage,
+    name: "Архыз", // Название карточки
+    link: arhyzImage, // Ссылка на изображение для карточки
   },
   {
     name: "Челябинская область",
@@ -39,30 +39,3 @@ export const initialCards = [
     link: baykalImage,
   },
 ];
-
-export function createCard(data) {
-  const cardTemplate = document.querySelector("#card-template").content;
-  const cardElement = cardTemplate.querySelector(".card").cloneNode(true);
-  const cardImage = cardElement.querySelector(".card__image");
-  const cardTitle = cardElement.querySelector(".card__title");
-  const deleteButton = cardElement.querySelector(".card__delete-button");
-  const likeButton = cardElement.querySelector(".card__like-button");
-
-  cardImage.src = data.link;
-  cardImage.alt = data.name;
-  cardTitle.textContent = data.name;
-
-  deleteButton.addEventListener("click", () => cardElement.remove());
-
-  likeButton.addEventListener("click", () => handleLikeClick(likeButton));
-
-  cardImage.addEventListener("click", () =>
-    openImagePopup(data.link, data.name)
-  );
-
-  return cardElement;
-}
-
-export function handleLikeClick(likeButton) {
-  likeButton.classList.toggle("card__like-button_is-active");
-}
