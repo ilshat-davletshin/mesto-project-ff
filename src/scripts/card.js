@@ -1,3 +1,5 @@
+import { addLike, deleteCard, removeLike } from "./api.js";
+
 // Функция создания карточки
 // принимает 4 параметра:
 // data - объект с данными карточки (name, link),
@@ -8,7 +10,8 @@ export function createCard(
   data,
   handleCardDelete,
   handleLikeClick,
-  handleImageClick
+  handleImageClick,
+  userId
 ) {
   // Получаем шаблон карточки из DOM (template с id "card-template")
   const cardTemplate = document.querySelector("#card-template").content;
@@ -19,6 +22,18 @@ export function createCard(
   const cardTitle = cardElement.querySelector(".card__title");
   const deleteButton = cardElement.querySelector(".card__delete-button");
   const likeButton = cardElement.querySelector(".card__like-button");
+  const likeCounter = cardElement.querySelector(".card__like-counter");
+
+  const cardId = data._id;
+  const cardOwnerId = data.owner._id;
+
+  const hasLike = data.likes.some((likes) => likes._id === userId);
+
+  if (hasLike) {
+    likeButton.classList.add("card__like-button_is-active");
+  } else {
+    likeButton.classList.remove("card__like-button_is-active");
+  }
 
   // Устанавливаем изображение карточки
   // Используем данные из объекта `data`: ссылка для src и описание/название для alt
@@ -26,14 +41,19 @@ export function createCard(
   cardImage.alt = data.name;
   // Устанавливаем текст заголовка карточки
   cardTitle.textContent = data.name;
+  likeCounter.textContent = data.likes.length;
+
+  isCardOwner(userId, cardOwnerId, deleteButton);
 
   // Добавляем обработчик на кнопку удаления карточки
-  // При клике вызываем функцию `handleCardDelete`, передавая текущий элемент карточки
-  deleteButton.addEventListener("click", () => handleCardDelete(cardElement));
+  deleteButton.addEventListener("click", () => {
+    handleCardDelete(cardId, cardElement);
+  });
 
   // Добавляем обработчик на кнопку лайка
-  // При клике вызываем функцию `handleLikeClick`, передавая саму кнопку
-  likeButton.addEventListener("click", () => handleLikeClick(likeButton));
+  likeButton.addEventListener("click", (e) => {
+    handleLikeClick(e, cardId, likeCounter);
+  });
 
   // Добавляем обработчик на изображение карточки
   // При клике вызываем функцию `handleImageClick`, передавая ссылку и имя для изображения
@@ -46,14 +66,47 @@ export function createCard(
 }
 
 // Функция удаления карточки
-export function handleCardDelete(cardElement) {
-  // Удаляем переданный элемент карточки из DOM
-  cardElement.remove();
+export function handleCardDelete(cardId, cardElement) {
+  deleteCard(cardId)
+    .then(() => {
+      cardElement.remove();
+    })
+    .catch((err) =>
+      console.error("Произошла ошибка при удалении карточки:", err)
+    );
 }
 
 // Функция обработки клика на кнопку лайка
-export function handleLikeClick(likeButton) {
-  // Добавляем или удаляем класс "card__like-button_is-active" на кнопке
-  // Это позволяет переключать состояние лайка (активный или неактивный)
-  likeButton.classList.toggle("card__like-button_is-active");
+export function handleLikeClick(e, cardId, likeCounter) {
+  const likeButton = e.target.classList.contains("card__like-button");
+  const hasLike = e.target.classList.contains("card__like-button_is-active");
+
+  if (likeButton && !hasLike) {
+    e.target.classList.toggle("card__like-button_is-active");
+    addLike(cardId)
+      .then((data) => {
+        likeCounter.textContent = data.likes.length;
+      })
+      .catch((err) => {
+        console.log("Произошла ошибка при попытке поставить лайк:", err);
+        e.target.classList.remove("card__like-button_is-active");
+      });
+  } else if (likeButton && hasLike) {
+    e.target.classList.remove("card__like-button_is-active");
+    removeLike(cardId)
+      .then((data) => {
+        likeCounter.textContent = data.likes.length;
+      })
+      .catch((err) => {
+        console.log("Произошла ошибка при попытке удалить лайк:", err);
+        e.target.classList.add("card__like-button_is-active");
+      });
+  }
+}
+
+function isCardOwner(userId, cardOwnerId, deleteButton) {
+  if (cardOwnerId !== userId) {
+    deleteButton.disabled = true;
+    deleteButton.style.display = "none";
+  }
 }

@@ -35,6 +35,7 @@ export function closePopupOnEscape(evt) {
 export function closePopupByOverlay(evt) {
   // Проверяем, был ли клик на самом попапе (оверлее)
   if (evt.target === evt.currentTarget) {
+    // // Закрываем попап
     closePopup(evt.currentTarget);
   }
 }

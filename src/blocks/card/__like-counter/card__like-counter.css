@@ -1,0 +1,6 @@
+.card__like-counter {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+}
