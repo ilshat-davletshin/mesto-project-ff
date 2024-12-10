@@ -31,8 +31,6 @@ export function createCard(
 
   if (hasLike) {
     likeButton.classList.add("card__like-button_is-active");
-  } else {
-    likeButton.classList.remove("card__like-button_is-active");
   }
 
   // Устанавливаем изображение карточки
@@ -78,30 +76,18 @@ export function handleCardDelete(cardId, cardElement) {
 
 // Функция обработки клика на кнопку лайка
 export function handleLikeClick(e, cardId, likeCounter) {
-  const likeButton = e.target.classList.contains("card__like-button");
+  // const likeButton = e.target.classList.contains("card__like-button");
   const hasLike = e.target.classList.contains("card__like-button_is-active");
 
-  if (likeButton && !hasLike) {
-    e.target.classList.toggle("card__like-button_is-active");
-    addLike(cardId)
-      .then((data) => {
-        likeCounter.textContent = data.likes.length;
-      })
-      .catch((err) => {
-        console.log("Произошла ошибка при попытке поставить лайк:", err);
-        e.target.classList.remove("card__like-button_is-active");
-      });
-  } else if (likeButton && hasLike) {
-    e.target.classList.remove("card__like-button_is-active");
-    removeLike(cardId)
-      .then((data) => {
-        likeCounter.textContent = data.likes.length;
-      })
-      .catch((err) => {
-        console.log("Произошла ошибка при попытке удалить лайк:", err);
-        e.target.classList.add("card__like-button_is-active");
-      });
-  }
+  const likeMethod = hasLike ? removeLike : addLike;
+  likeMethod(cardId)
+    .then((data) => {
+      likeCounter.textContent = data.likes.length;
+      e.target.classList.toggle("card__like-button_is-active");
+    })
+    .catch((err) =>
+      console.log("Произошла ошибка при клике на кнопку лайк:", err)
+    );
 }
 
 function isCardOwner(userId, cardOwnerId, deleteButton) {

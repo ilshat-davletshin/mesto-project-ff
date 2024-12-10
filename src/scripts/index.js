@@ -117,40 +117,12 @@ function initPopups() {
     // Добавляем обработчик для кнопки закрытия
     closeButton.addEventListener("click", () => {
       closePopup(popup);
-      resetPopup(popup);
     });
 
     popup.addEventListener("mousedown", (e) => {
       closePopupByOverlay(e);
-      if (e.target === popup) {
-        closePopup(popup);
-        resetPopup(popup);
-      }
-    });
-
-    // Добавляем обработчик нажатия клавиши Escape
-    popup.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        closePopup(popup);
-        resetPopup(popup);
-      }
     });
   });
-}
-
-// Функция сброса ошибок и очистки полей в попапе
-function resetPopup(popup) {
-  if (popup === popupNewCard) {
-    // Убираем ошибки
-    clearValidation(newCardForm, validationObj);
-    // Очищаем поля
-    newCardForm.reset();
-  } else if (popup === popupEdit) {
-    // Убираем ошибки
-    clearValidation(formElement, validationObj);
-    // Очищаем поля
-    formElement.reset();
-  }
 }
 
 // Обработчик клика по кнопке редактирования профиля
@@ -166,38 +138,32 @@ editButton.addEventListener("click", () => {
 
 // Обработчик клика по кнопке добавления новой карточки
 // Открывает попап для добавления новой карточки
-addButton.addEventListener("click", () => {
+addButton.addEventListener("click", (e) => {
+  newCardNameInput.value = "";
+  newCardLinkInput.value = "";
   clearValidation(popupNewCard, validationObj);
   openPopup(popupNewCard);
 });
 
 // Открывает попап для изменения аватара пользователя
 profileImage.addEventListener("click", () => {
+  editAvatar.value = "";
   clearValidation(popupNewAvatar, validationObj);
   openPopup(popupNewAvatar);
 });
 
-function handleProfileFormSubmit(e) {
-  e.preventDefault();
-  profileName.textContent = nameInput.value;
-  profileDescription.textContent = jobInput.value;
-  closePopup(document.querySelector(".popup_type_edit"));
-}
-
-formElement.addEventListener("submit", handleProfileFormSubmit);
-
 function updateProfileData(e) {
   e.preventDefault();
 
-  console.log(profileName);
+  const name = nameInput.value;
+  const about = jobInput.value;
 
-  let name = nameInput.value;
-  let about = jobInput.value;
   saveRequest(true, profileEditButton);
+
   updateProfile(name, about)
     .then((data) => {
-      nameInput.textContent = data.name;
-      jobInput.textContent = data.about;
+      profileName.textContent = data.name;
+      profileDescription.textContent = data.about;
       closePopup(popupEdit);
       formElement.reset();
     })
@@ -215,7 +181,7 @@ formElement.addEventListener("submit", updateProfileData);
 function editAvatarImage(e) {
   e.preventDefault();
 
-  let avatarLink = editAvatar.value;
+  const avatarLink = editAvatar.value;
 
   saveRequest(true, newAvatarButton);
   updateAvatar(avatarLink)
@@ -237,6 +203,7 @@ popupNewAvatarForm.addEventListener("submit", editAvatarImage);
 
 function createNewCard(e) {
   e.preventDefault();
+
   const cardName = newCardNameInput.value;
   const cardLink = newCardLinkInput.value;
 
@@ -270,11 +237,7 @@ function addCard(newCard) {
 newCardForm.addEventListener("submit", createNewCard);
 
 function saveRequest(loader, button) {
-  if (loader) {
-    button.textContent = "Сохранение...";
-  } else if (!loader) {
-    button.textContent = "Сохранить";
-  }
+  button.textContent = loader ? "Сохранение..." : "Сохранить";
 }
 
 enableValidation(validationObj);
